@@ -1,1 +1,1 @@
-# questions
+#Import the data using pgAdmin

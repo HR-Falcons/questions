@@ -10,15 +10,19 @@ app.use(cors());
 
 app.listen(process.env.PORT);
 
-app.get('/:qid', (req, res) => {
-  db.getById(req.params.qid)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.end();
-    });
+app.get('/:product_id', (req, res) => {
+  if (Number.isNaN(Number(req.params.product_id))) {
+    res.sendStatus(404);
+  } else {
+    db.getQAbyProductId(req.params.product_id)
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.end();
+      });
+  }
 });
 // eslint-disable-next-line no-console
 console.log(`Listening at http://localhost:${process.env.PORT}`);
