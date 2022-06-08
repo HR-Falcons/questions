@@ -8,4 +8,8 @@ Make your tables with columns in pgAdmin first. Be sure to follow the exact form
 
 Right click on a table and select "Import/Export Data"
 
+![Right Click](./readme_assets/RightClick.png)
+
 Make sure "Import" is selected, and select the CSV file to import. Make sure "Header" is selected because the CSV file should have headers in it.
+
+![Import Data](./readme_assets/ImportData.png)
