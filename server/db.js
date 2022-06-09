@@ -113,7 +113,7 @@ const Question = (data) => (
     question_date: new Date(Number(data.date_written)).toISOString(),
     asker_name: data.asker_name,
     question_helpfulness: data.helpful,
-    reported: Boolean(data.reported),
+    reported: false,
     answers: {},
   }
 );
@@ -131,6 +131,7 @@ const Answer = (data) => (
 
 const getPhotosByAnswerId = (answer_id) => (
   AnswersPhotos.findAll({
+    attributes: ['answer_id', 'url'],
     where: {
       answer_id,
     },
@@ -143,6 +144,7 @@ const getPhotosByAnswerId = (answer_id) => (
 
 const getQuestionsByProductId = (product_id) => (
   Questions.findAll({
+    attributes: ['id', 'body', 'date_written', 'asker_name', 'helpful'],
     where: {
       product_id,
       reported: false,
@@ -154,28 +156,36 @@ const getQuestionsByProductId = (product_id) => (
     })
 );
 
-const getAnswersByQuestionId = (question_id) => (
-  Answers.findAll({
+const getAnswersByQuestionId = (question_id) => {
+  const answers = {};
+  return Answers.findAll({
+    attributes: ['id', 'body', 'date_written', 'answerer_name', 'helpful'],
     where: {
       question_id,
       reported: false,
     },
   })
     .then((response) => {
-      return response;
-      // const promArray = [];
-      // response.forEach((ansArr, i) => {
-      //   ansArr.forEach((ans) => {
-      //     results[i].answers[ans.id] = Answer(ans);
-      //     promArray.push(getPhotosByAnswerId(ans.id));
-      //   });
-      // });
-      // return Promise.all(promArray);
+      // return response;
+      const promArray = [];
+      response.forEach((ans) => {
+        answers[ans.id] = Answer(ans);
+        promArray.push(getPhotosByAnswerId(ans.id));
+      });
+      return Promise.all(promArray);
+    })
+    .then((response) => {
+      response.forEach((photoArr) => {
+        photoArr.forEach((photo) => {
+          answers[photo.answer_id].photos.push(photo.url);
+        });
+      });
+      return answers;
     })
     .catch((err) => {
       console.log('getAnswersByQuestionId', err);
-    })
-);
+    });
+};
 
 const getQAbyProductId = (product_id) => {
   let results = [];
@@ -191,9 +201,7 @@ const getQAbyProductId = (product_id) => {
     })
     .then((response) => {
       response.forEach((ansArr, i) => {
-        ansArr.forEach((ans) => {
-          results[i].answers[ans.id] = Answer(ans);
-        });
+        results[i].answers = ansArr;
       });
       return results;
     })
