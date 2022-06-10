@@ -147,6 +147,17 @@ const Answer2 = (data) => (
   }
 );
 
+const Answer3 = (data) => (
+  {
+    answer_id: data.answer_id,
+    body: data.body,
+    date: new Date(Number(data.date)).toISOString(),
+    answerer_name: data.answerer_name,
+    helpfulness: data.helpfulness,
+    photos: [],
+  }
+);
+
 const getPhotosByAnswerId = (answer_id) => (
   AnswersPhotos.findAll({
     attributes: ['answer_id', 'url'],
@@ -160,13 +171,15 @@ const getPhotosByAnswerId = (answer_id) => (
     })
 );
 
-const getQuestionsByProductId = (product_id) => (
+const getQuestionsByProductId = (product_id, page, count) => (
   Questions.findAll({
     attributes: ['id', 'body', 'date_written', 'asker_name', 'helpful'],
     where: {
       product_id,
       reported: false,
     },
+    limit: count,
+    offset: (page - 1) * count,
   })
     .then((response) => response.map(Question))
     .catch((err) => {
@@ -205,10 +218,10 @@ const getAnswersByQuestionId = (question_id) => {
     });
 };
 
-const getQAbyProductId = (product_id) => {
+const getQAbyProductId = (product_id, page, count) => {
   let results = [];
 
-  return getQuestionsByProductId(product_id)
+  return getQuestionsByProductId(product_id, page, count)
     .then((response) => {
       results = response;
       const promArray = [];
@@ -268,7 +281,40 @@ const getQAbyProductIdJoin = (product_id, page, count) => {
     });
 };
 
+const getAbyProductIdJoin = (question_id, page, count) => {
+  const results = [];
+  const limit = count;
+  const offset = (page - 1) * count;
+  return sequelize.query(`select "Answers".id as answer_id, "Answers".body, "Answers".date_written as date, "Answers".answerer_name, "Answers".helpful as helpfulness, "AnswersPhotos".id as photo_id, "AnswersPhotos".url from (select * from "Answers" where "Answers".question_id = ${question_id} and "Answers".reported = false order by "Answers".id limit ${limit} offset ${offset} ) "Answers" left outer join "AnswersPhotos" on "Answers".id = "AnswersPhotos".answer_id;`, {
+    type: QueryTypes.SELECT,
+  })
+    .then((response) => {
+      let j = 0;
+      let k;
+      while (j < response.length) {
+        k = j;
+        const answer = Answer3(response[j]);
+        while (k < response.length && response[j].answer_id === response[k].answer_id) {
+          if (response[k].url) {
+            answer.photos.push({
+              id: response[k].photo_id,
+              url: response[k].url,
+            });
+          }
+          k++;
+        }
+        j = k;
+        results.push(answer);
+      }
+      return results;
+    })
+    .catch((err) => {
+      console.log('getAbyProductIDJoin', err);
+    });
+};
+
 module.exports = {
   getQAbyProductId,
   getQAbyProductIdJoin,
+  getAbyProductIdJoin,
 };
