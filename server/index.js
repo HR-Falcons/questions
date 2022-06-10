@@ -10,11 +10,14 @@ app.use(cors());
 
 app.listen(process.env.PORT);
 
-app.get('/qa1/:product_id', (req, res) => {
-  if (Number.isNaN(Number(req.params.product_id))) {
+app.get('/qa/questions/', (req, res) => {
+  const product_id = req.query.product_id;
+  const page = req.query.page || 1;
+  const count = req.query.count || 5;
+  if (Number.isNaN(Number(product_id))) {
     res.sendStatus(404);
   } else {
-    db.getQAbyProductId(req.params.product_id)
+    db.getQAbyProductIdJoin(product_id, page, count)
       .then((data) => {
         res.send(data);
       })
@@ -25,19 +28,4 @@ app.get('/qa1/:product_id', (req, res) => {
   }
 });
 
-app.get('/qa2/:product_id', (req, res) => {
-  if (Number.isNaN(Number(req.params.product_id))) {
-    res.sendStatus(404);
-  } else {
-    db.getQAbyProductIdJoin(req.params.product_id)
-      .then((data) => {
-        res.send(data);
-      })
-      .catch((err) => {
-        console.log(err);
-        res.end();
-      });
-  }
-});
-// eslint-disable-next-line no-console
 console.log(`Listening at http://localhost:${process.env.PORT}`);

@@ -228,10 +228,11 @@ const getQAbyProductId = (product_id) => {
     });
 };
 
-const getQAbyProductIdJoin = (product_id) => {
+const getQAbyProductIdJoin = (product_id, page, count) => {
   const results = [];
-
-  return sequelize.query(`select "Questions".id as question_id, "Questions".body as question_body, "Questions".date_written as question_date, asker_name, "Questions".helpful as question_helpfulness, "Answers".id as id, "Answers".body, "Answers".date_written as date, "Answers".answerer_name, "Answers".helpful as helpfulness, "AnswersPhotos".url from "Questions" left outer join "Answers" on "Questions".id = "Answers".question_id left outer join "AnswersPhotos" on "Answers".id = "AnswersPhotos".answer_id where product_id = ${product_id} and "Questions".reported = false and ("Answers".reported = false or "Answers".reported is null);`, {
+  const limit = count;
+  const offset = (page - 1) * count;
+  return sequelize.query(`select "Questions".id as question_id, "Questions".body as question_body, "Questions".date_written as question_date, asker_name, "Questions".helpful as question_helpfulness, "Answers".id as id, "Answers".body, "Answers".date_written as date, "Answers".answerer_name, "Answers".helpful as helpfulness, "AnswersPhotos".url from (select * from "Questions" where product_id = ${product_id} and "Questions".reported = false order by "Questions".id limit ${limit} offset ${offset}) "Questions" left outer join "Answers" on "Questions".id = "Answers".question_id left outer join "AnswersPhotos" on "Answers".id = "AnswersPhotos".answer_id where ("Answers".reported = false or "Answers".reported is null);`, {
     type: QueryTypes.SELECT,
   })
     .then((response) => {
@@ -254,12 +255,11 @@ const getQAbyProductIdJoin = (product_id) => {
             question.answers[answer.id] = answer;
             j = k;
           }
-          results.push(question);
           i = j;
         } else {
           i++;
-          results.push(question);
         }
+        results.push(question);
       }
       return results;
     })
