@@ -118,4 +118,72 @@ app.post('/qa/questions/:question_id/answers', (req, res) => {
   }
 });
 
+app.put('/qa/questions/:question_id/helpful', (req, res) => {
+  const question_id = req.params.question_id;
+
+  if (Number.isNaN(Number(question_id))) {
+    res.sendStatus(400);
+  } else {
+    db.markQuestionHelpful(question_id)
+      .then(() => {
+        res.sendStatus(204);
+      })
+      .catch((err) => {
+        console.log('put /qa/questions/:question_id/helpful', err);
+        res.sendStatus(500);
+      });
+  }
+});
+
+app.put('/qa/questions/:question_id/report', (req, res) => {
+  const question_id = req.params.question_id;
+
+  if (Number.isNaN(Number(question_id))) {
+    res.sendStatus(400);
+  } else {
+    db.reportQuestion(question_id)
+      .then(() => {
+        res.sendStatus(204);
+      })
+      .catch((err) => {
+        console.log('put /qa/questions/:question_id/report', err);
+        res.sendStatus(500);
+      });
+  }
+});
+
+app.put('/qa/answers/:answer_id/helpful', (req, res) => {
+  const answer_id = req.params.answer_id;
+
+  if (Number.isNaN(Number(answer_id))) {
+    res.sendStatus(400);
+  } else {
+    db.markAnswerHelpful(answer_id)
+      .then(() => {
+        res.sendStatus(204);
+      })
+      .catch((err) => {
+        console.log('put /qa/answers/:answer_id/helpful', err);
+        res.sendStatus(500);
+      });
+  }
+});
+
+app.put('/qa/answers/:answer_id/report', (req, res) => {
+  const answer_id = req.params.answer_id;
+
+  if (Number.isNaN(Number(answer_id))) {
+    res.sendStatus(400);
+  } else {
+    db.reportAnswer(answer_id)
+      .then(() => {
+        res.sendStatus(204);
+      })
+      .catch((err) => {
+        console.log('put /qa/answers/:answer_id/report', err);
+        res.sendStatus(500);
+      });
+  }
+});
+
 console.log(`Listening at http://localhost:${process.env.PORT}`);

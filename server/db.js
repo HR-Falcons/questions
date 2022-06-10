@@ -189,7 +189,6 @@ const getAnswersByQuestionId = (question_id) => {
     },
   })
     .then((response) => {
-      // return response;
       const promArray = [];
       response.forEach((ans) => {
         answers[ans.id] = Answer(ans);
@@ -372,10 +371,50 @@ const addAnswer = (question_id, body, name, email, photos) => (
     })
 );
 
+const markQuestionHelpful = (question_id) => (
+  Questions.increment('helpful', {
+    where: {
+      id: question_id,
+    },
+  })
+);
+
+const reportQuestion = (question_id) => (
+  Questions.update({
+    reported: true,
+  }, {
+    where: {
+      id: question_id,
+    },
+  })
+);
+
+const markAnswerHelpful = (answer_id) => (
+  Answers.increment('helpful', {
+    where: {
+      id: answer_id,
+    },
+  })
+);
+
+const reportAnswer = (answer_id) => (
+  Answers.update({
+    reported: true,
+  }, {
+    where: {
+      id: answer_id,
+    },
+  })
+);
+
 module.exports = {
   getQAbyProductId,
   getQAbyProductIdJoin,
   getAbyProductIdJoin,
   addQuestion,
   addAnswer,
+  markQuestionHelpful,
+  reportQuestion,
+  markAnswerHelpful,
+  reportAnswer,
 };
