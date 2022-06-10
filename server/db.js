@@ -17,36 +17,29 @@ sequelize.authenticate()
 const Questions = sequelize.define('Questions', {
   id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    autoIncrement: true,
     primaryKey: true,
   },
   product_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
   },
   body: {
     type: DataTypes.TEXT,
-    allowNull: false,
   },
   date_written: {
     type: DataTypes.BIGINT,
-    allowNull: false,
   },
   asker_name: {
     type: DataTypes.TEXT,
-    allowNull: false,
   },
   asker_email: {
     type: DataTypes.TEXT,
-    allowNull: false,
   },
   reported: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
   },
   helpful: {
     type: DataTypes.INTEGER,
-    allowNull: false,
   },
 }, {
   timestamps: false,
@@ -55,12 +48,11 @@ const Questions = sequelize.define('Questions', {
 const Answers = sequelize.define('Answers', {
   id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    autoIncrement: true,
     primaryKey: true,
   },
   question_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
   },
   body: {
     type: DataTypes.TEXT,
@@ -313,8 +305,31 @@ const getAbyProductIdJoin = (question_id, page, count) => {
     });
 };
 
+const addQuestion = (body, name, email, product_id) => (
+  Questions.create({
+    product_id,
+    body,
+    date_written: Date.now(),
+    asker_name: name,
+    asker_email: email,
+    reported: false,
+    helpful: 0,
+  }).then((data) => (
+    Answers.create({
+      question_id: data.id,
+      body: null,
+      date_written: null,
+      answerer_name: null,
+      answerer_email: null,
+      reported: null,
+      helpful: null,
+    })
+  ))
+);
+
 module.exports = {
   getQAbyProductId,
   getQAbyProductIdJoin,
   getAbyProductIdJoin,
+  addQuestion,
 };

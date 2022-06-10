@@ -15,18 +15,18 @@ app.get('/qa/questions', (req, res) => {
   const page = req.query.page || 1;
   const count = req.query.count || 5;
   if (Number.isNaN(Number(product_id))) {
-    res.sendStatus(404);
+    res.sendStatus(400);
   } else {
     db.getQAbyProductIdJoin(product_id, page, count)
       .then((results) => {
-        res.send({
+        res.status(200).send({
           product_id,
           results,
         });
       })
       .catch((err) => {
         console.log('get /qa/questions', err);
-        res.end();
+        res.sendStatus(500);
       });
   }
 });
@@ -36,18 +36,18 @@ app.get('/qa/questions2', (req, res) => {
   const page = req.query.page || 1;
   const count = req.query.count || 5;
   if (Number.isNaN(Number(product_id))) {
-    res.sendStatus(404);
+    res.sendStatus(400);
   } else {
     db.getQAbyProductId(product_id, page, count)
       .then((results) => {
-        res.send({
+        res.status(200).send({
           product_id,
           results,
         });
       })
       .catch((err) => {
         console.log('get /qa/questions2', err);
-        res.end();
+        res.sendStatus(500);
       });
   }
 });
@@ -57,11 +57,11 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
   const page = req.query.page || 1;
   const count = req.query.count || 5;
   if (Number.isNaN(Number(question_id))) {
-    res.sendStatus(404);
+    res.sendStatus(400);
   } else {
     db.getAbyProductIdJoin(question_id, page, count)
       .then((results) => {
-        res.send({
+        res.status(200).send({
           question: question_id,
           page,
           count,
@@ -69,8 +69,25 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
         });
       })
       .catch((err) => {
-        console.log(err);
-        res.end();
+        console.log('get /qa/questions/:question_id/answers', err);
+        res.sendStatus(500);
+      });
+  }
+});
+
+app.post('/qa/questions', (req, res) => {
+  const { body, name, email, product_id } = req.body;
+
+  if (Number.isNaN(Number(product_id))) {
+    res.sendStatus(404);
+  } else {
+    db.addQuestion(body, name, email, product_id)
+      .then(() => {
+        res.sendStatus(201);
+      })
+      .catch((err) => {
+        console.log('post /qa/questions', err);
+        res.sendStatus(500);
       });
   }
 });
