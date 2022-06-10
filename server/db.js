@@ -1,9 +1,11 @@
-const { Sequelize, Model, DataTypes } = require('sequelize');
+const { Sequelize, Model, DataTypes, QueryTypes } = require('sequelize');
 const Promise = require('bluebird');
 require('dotenv').config();
 
 // Option 1: Passing a connection URI
-const sequelize = new Sequelize(`postgres://${process.env.pgUser}:${process.env.pgPass}@localhost:${process.env.pgPort}/SDC`); // Example for postgres
+const sequelize = new Sequelize(`postgres://${process.env.pgUser}:${process.env.pgPass}@localhost:${process.env.pgPort}/SDC`, {
+  logging: false,
+}); // Example for postgres
 
 sequelize.authenticate()
   .then(() => {
@@ -62,27 +64,21 @@ const Answers = sequelize.define('Answers', {
   },
   body: {
     type: DataTypes.TEXT,
-    allowNull: false,
   },
   date_written: {
     type: DataTypes.BIGINT,
-    allowNull: false,
   },
   answerer_name: {
     type: DataTypes.TEXT,
-    allowNull: false,
   },
   answerer_email: {
     type: DataTypes.TEXT,
-    allowNull: false,
   },
   reported: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
   },
   helpful: {
     type: DataTypes.INTEGER,
-    allowNull: false,
   },
 }, {
   timestamps: false,
@@ -100,7 +96,6 @@ const AnswersPhotos = sequelize.define('AnswersPhotos', {
   },
   url: {
     type: DataTypes.TEXT,
-    allowNull: false,
   },
 }, {
   timestamps: false,
@@ -118,6 +113,18 @@ const Question = (data) => (
   }
 );
 
+const Question2 = (data) => (
+  {
+    question_id: data.question_id,
+    question_body: data.question_body,
+    question_date: new Date(Number(data.question_date)).toISOString(),
+    asker_name: data.asker_name,
+    question_helpfulness: data.question_helpfulness,
+    reported: false,
+    answers: {},
+  }
+);
+
 const Answer = (data) => (
   {
     id: data.id,
@@ -125,6 +132,17 @@ const Answer = (data) => (
     date: new Date(Number(data.date_written)).toISOString(),
     answerer_name: data.answerer_name,
     helpfulness: data.helpful,
+    photos: [],
+  }
+);
+
+const Answer2 = (data) => (
+  {
+    id: data.id,
+    body: data.body,
+    date: new Date(Number(data.date)).toISOString(),
+    answerer_name: data.answerer_name,
+    helpfulness: data.helpfulness,
     photos: [],
   }
 );
@@ -210,6 +228,47 @@ const getQAbyProductId = (product_id) => {
     });
 };
 
+const getQAbyProductIdJoin = (product_id) => {
+  const results = [];
+
+  return sequelize.query(`select "Questions".id as question_id, "Questions".body as question_body, "Questions".date_written as question_date, asker_name, "Questions".helpful as question_helpfulness, "Answers".id as id, "Answers".body, "Answers".date_written as date, "Answers".answerer_name, "Answers".helpful as helpfulness, "AnswersPhotos".url from "Questions" left outer join "Answers" on "Questions".id = "Answers".question_id left outer join "AnswersPhotos" on "Answers".id = "AnswersPhotos".answer_id where product_id = ${product_id} and "Questions".reported = false and ("Answers".reported = false or "Answers".reported is null);`, {
+    type: QueryTypes.SELECT,
+  })
+    .then((response) => {
+      let i = 0;
+      let j;
+      let k;
+      while (i < response.length) {
+        const question = Question2(response[i]);
+        if (response[i].body) {
+          j = i;
+          while (j < response.length && response[j].question_id === response[i].question_id) {
+            k = j;
+            const answer = Answer2(response[j]);
+            while (k < response.length && response[j].id === response[k].id) {
+              if (response[k].url) {
+                answer.photos.push(response[k].url);
+              }
+              k++;
+            }
+            question.answers[answer.id] = answer;
+            j = k;
+          }
+          results.push(question);
+          i = j;
+        } else {
+          i++;
+          results.push(question);
+        }
+      }
+      return results;
+    })
+    .catch((err) => {
+      console.log('getQAbyProductIDJoin', err);
+    });
+};
+
 module.exports = {
   getQAbyProductId,
+  getQAbyProductIdJoin,
 };

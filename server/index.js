@@ -10,11 +10,26 @@ app.use(cors());
 
 app.listen(process.env.PORT);
 
-app.get('/:product_id', (req, res) => {
+app.get('/qa1/:product_id', (req, res) => {
   if (Number.isNaN(Number(req.params.product_id))) {
     res.sendStatus(404);
   } else {
     db.getQAbyProductId(req.params.product_id)
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.end();
+      });
+  }
+});
+
+app.get('/qa2/:product_id', (req, res) => {
+  if (Number.isNaN(Number(req.params.product_id))) {
+    res.sendStatus(404);
+  } else {
+    db.getQAbyProductIdJoin(req.params.product_id)
       .then((data) => {
         res.send(data);
       })
