@@ -79,7 +79,7 @@ const Answers = sequelize.define('Answers', {
 const AnswersPhotos = sequelize.define('AnswersPhotos', {
   id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    autoIncrement: true,
     primaryKey: true,
   },
   answer_id: {
@@ -327,9 +327,55 @@ const addQuestion = (body, name, email, product_id) => (
   ))
 );
 
+const addAnswer = (question_id, body, name, email, photos) => (
+  Answers.findOne({
+    where: {
+      question_id,
+      body: null,
+    },
+  })
+    .then((data) => {
+      if (data) {
+        return Answers.update({
+          body,
+          date_written: Date.now(),
+          answerer_name: name,
+          answerer_email: email,
+          reported: false,
+          helpful: 0,
+        }, {
+          where: {
+            id: data.id,
+          },
+        });
+      }
+      return Answers.create({
+        question_id,
+        body,
+        date_written: Date.now(),
+        answerer_name: name,
+        answerer_email: email,
+        reported: false,
+        helpful: 0,
+      });
+    })
+    .then((data) => {
+      if (photos) {
+        const promArray = photos.map((url) => (
+          AnswersPhotos.create({
+            answer_id: data.id,
+            url,
+          })
+        ));
+        return Promise.all(promArray);
+      }
+    })
+);
+
 module.exports = {
   getQAbyProductId,
   getQAbyProductIdJoin,
   getAbyProductIdJoin,
   addQuestion,
+  addAnswer,
 };
