@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watch",
-    "server": "nodemon --watch server ./server/"
+    "server": "nodemon --watch server ./server/",
+    "stress": "k6 run --vus 10 --duration 30s ./tests/k6script.js"
   },
   "repository": {
     "type": "git",

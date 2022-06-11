@@ -3,7 +3,7 @@ const Promise = require('bluebird');
 require('dotenv').config();
 
 // Option 1: Passing a connection URI
-const sequelize = new Sequelize(`postgres://${process.env.pgUser}:${process.env.pgPass}@localhost:${process.env.pgPort}/SDC`, {
+const sequelize = new Sequelize(`postgres://${process.env.sdccloudUser}:${process.env.sdccloudPass}@${process.env.sdccloudURL}:${process.env.pgPort}/sdc`, {
   logging: false,
 }); // Example for postgres
 
