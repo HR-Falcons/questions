@@ -9,9 +9,9 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/qa/questions', (req, res) => {
-  const product_id = req.query.product_id;
-  const page = req.query.page || 1;
-  const count = req.query.count || 5;
+  const product_id = Number(req.query.product_id);
+  const page = Number(req.query.page) || 1;
+  const count = Number(req.query.count) || 5;
   if (Number.isNaN(Number(product_id)) || Number.isNaN(Number(page))
   || Number.isNaN(Number(count))) {
     res.sendStatus(400);
@@ -31,11 +31,11 @@ app.get('/qa/questions', (req, res) => {
 });
 
 app.get('/qa/questions2', (req, res) => {
-  const product_id = req.query.product_id;
-  const page = req.query.page || 1;
-  const count = req.query.count || 5;
-  if (Number.isNaN(Number(product_id)) || Number.isNaN(Number(page))
-  || Number.isNaN(Number(count))) {
+  const product_id = Number(req.query.product_id);
+  const page = Number(req.query.page) || 1;
+  const count = Number(req.query.count) || 5;
+  if (Number.isNaN(product_id) || Number.isNaN(page)
+  || Number.isNaN(count)) {
     res.sendStatus(400);
   } else {
     db.getQAbyProductId(product_id, page, count)
@@ -53,11 +53,11 @@ app.get('/qa/questions2', (req, res) => {
 });
 
 app.get('/qa/questions/:question_id/answers', (req, res) => {
-  const question_id = req.params.question_id;
-  const page = req.query.page || 1;
-  const count = req.query.count || 5;
-  if (Number.isNaN(Number(question_id)) || Number.isNaN(Number(page))
-  || Number.isNaN(Number(count))) {
+  const question_id = Number(req.params.question_id);
+  const page = Number(req.query.page) || 1;
+  const count = Number(req.query.count) || 5;
+  if (Number.isNaN(question_id) || Number.isNaN(page)
+  || Number.isNaN(count)) {
     res.sendStatus(400);
   } else {
     db.getAbyProductIdJoin(question_id, page, count)
@@ -81,7 +81,8 @@ app.post('/qa/questions', (req, res) => {
 
   if (Number.isNaN(Number(product_id)) || typeof body !== 'string'
   || typeof name !== 'string' || typeof email !== 'string'
-  || body.length === 0 || name.length === 0 || email.length === 0) {
+  || body.length === 0 || name.length === 0 || email.length === 0
+  || !/^[\w\d]+@[\w\d]+\.[\w\d]+$/.test(email)) {
     res.sendStatus(400);
   } else {
     db.addQuestion(body, name, email, product_id)
@@ -102,7 +103,7 @@ app.post('/qa/questions/:question_id/answers', (req, res) => {
   if (Number.isNaN(Number(question_id)) || typeof body !== 'string'
   || typeof name !== 'string' || typeof email !== 'string'
   || body.length === 0 || name.length === 0 || email.length === 0
-  || !Array.isArray(photos)) {
+  || !/^[\w\d]+@[\w\d]+\.[\w\d]+$/.test(email) || !Array.isArray(photos)) {
     res.sendStatus(400);
   } else {
     db.addAnswer(question_id, body, name, email, photos)
