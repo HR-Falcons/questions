@@ -4,7 +4,7 @@
   "description": "Postgres RDBMS for Questions & Answers API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --watch",
     "server": "nodemon --watch server ./server/"
   },
   "repository": {
@@ -33,11 +33,15 @@
     "sequelize": "^6.20.1"
   },
   "devDependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "babel-jest": "^28.1.1",
     "eslint": "^8.17.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.30.0",
-    "eslint-plugin-react-hooks": "^4.5.0"
+    "eslint-plugin-react-hooks": "^4.5.0",
+    "jest": "^28.1.1",
+    "supertest": "^6.2.3"
   }
 }
