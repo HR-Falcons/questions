@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest --watch",
     "server": "nodemon --watch server ./server/",
+    "everserver": "pm2 start ./server/index.js --watch",
     "stress": "k6 run ./tests/k6script.js"
   },
   "repository": {
@@ -31,6 +32,7 @@
     "nodemon": "^2.0.16",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
+    "pm2": "^5.2.0",
     "sequelize": "^6.20.1"
   },
   "devDependencies": {
