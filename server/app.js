@@ -8,6 +8,20 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.get('/', (req, res) => {
+  res.status(200).send(`
+  Available routes:
+    GET /qa/questions
+    GET /qa/questions/:question_id/answers
+    POST /qa/questions
+    POST /qa/questions/:question_id/answers
+    PUT /qa/questions/:question_id/helpful
+    PUT /qa/questions/:question_id/report
+    PUT /qa/answers/:answer_id/helpful
+    PUT /qa/answers/:answer_id/report
+  `);
+});
+
 app.get('/qa/questions', (req, res) => {
   const product_id = Number(req.query.product_id);
   const page = Number(req.query.page) || 1;
