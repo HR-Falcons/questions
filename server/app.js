@@ -6,19 +6,23 @@ const db = require('./db.js');
 const app = express();
 
 app.use(express.json());
+app.use((req, res, next) => {
+  console.log(req.method, req.url);
+  next();
+});
 app.use(cors());
 
 app.get('/', (req, res) => {
   res.status(200).send(`
-  Available routes:
-    GET /qa/questions
-    GET /qa/questions/:question_id/answers
-    POST /qa/questions
-    POST /qa/questions/:question_id/answers
-    PUT /qa/questions/:question_id/helpful
-    PUT /qa/questions/:question_id/report
-    PUT /qa/answers/:answer_id/helpful
-    PUT /qa/answers/:answer_id/report
+  Available routes:\n
+    \tGET /qa/questions\n
+    \tGET /qa/questions/:question_id/answers\n
+    \tPOST /qa/questions\n
+    \tPOST /qa/questions/:question_id/answers\n
+    \tPUT /qa/questions/:question_id/helpful\n
+    \tPUT /qa/questions/:question_id/report\n
+    \tPUT /qa/answers/:answer_id/helpful\n
+    \tPUT /qa/answers/:answer_id/report\n
   `);
 });
 
