@@ -1,15 +1,21 @@
-# Import the data using pgAdmin
+# API server for interacting with PostgreSQL database
 
-Make your tables with columns in pgAdmin first. Be sure to follow the exact format of the data. Be sure you are using the public schema.
+### Install packages
 
-![Questions Columns](./readme_assets/QuestionsColumns.png)
-![Answers Columns](./readme_assets/AnswersColumns.png)
-![AnswersPhotos Columns](./readme_assets/AnswersPhotosColumns.png)
+```
+npm install
+```
 
-Right click on a table and select "Import/Export Data"
+### Make .env file
 
-![Right Click](./readme_assets/RightClick.png)
+Copy the *example.env* file and rename it to *.env* and change the variable values within as necessary.
 
-Make sure "Import" is selected, and select the CSV file to import. Make sure "Header" is selected because the CSV file should have headers in it.
+### Conduct the ELT process
 
-![Import Data](./readme_assets/ImportData.png)
+Consult the ELT folder for instructions on how to load the data into a PostgreSQL database.
+
+### Start the server
+
+```
+npm run everserver
+```
