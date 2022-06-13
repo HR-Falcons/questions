@@ -2,13 +2,21 @@ const { Sequelize, Model, DataTypes, QueryTypes } = require('sequelize');
 const Promise = require('bluebird');
 require('dotenv').config();
 
-const sequelize = new Sequelize(`postgres://${process.env.sdccloudUser}:${process.env.sdccloudPass}@${process.env.sdccloudURL}:${process.env.pgPort}/sdc`, {
-  logging: false,
-});
+// const sequelize = new Sequelize(`postgres://${process.env.sdccloudUser}:${process.env.sdccloudPass}@${process.env.sdccloudURL}:${process.env.pgPort}/sdc`, {
+//   logging: false,
+// });
 
 // const sequelize = new Sequelize(`postgres://${process.env.pgUser}:${process.env.pgPass}@localhost:${process.env.pgPort}/SDC`, {
 //   logging: false,
 // });
+
+// const sequelize = new Sequelize(`postgres://${process.env.sdcfreeUser}:${process.env.sdcfreePass}@${process.env.sdcfree2URL}:${process.env.pgPort}/sdc`, {
+//   logging: false,
+// });
+
+const sequelize = new Sequelize(`postgres://${process.env.sdcdbUser}:${process.env.sdcdbPass}@${process.env.sdcdbURL}:${process.env.pgPort}/sdc`, {
+  logging: false,
+});
 
 sequelize.authenticate()
   .then(() => {
