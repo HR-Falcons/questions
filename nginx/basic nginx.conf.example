@@ -1,0 +1,16 @@
+events {
+}
+
+http {
+  upstream <NAME> {
+    server <ADDRESS_OF_SERVER_INSTANCE_1>; # address of server instance
+    server <ADDRESS_OF_SERVER_INSTANCE_2>; # address of server instance
+  }
+  server {
+    listen <PORT>; # port that nginx will listen on
+
+    location / {
+      proxy_pass http://<NAME>; #use the same name as in upstream
+    }
+  }
+}
