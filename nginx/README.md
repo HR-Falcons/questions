@@ -15,6 +15,7 @@ Should be located at _/etc/nginx/nginx.conf_.
 Use *basic_nginx.conf.example* for the most basic load balancing.  
 Use *super_nginx.conf.example* for maximum throughput. (based on https://gist.github.com/v0lkan/90fcb83c86918732b894)  
 Edit _nginx.conf_ to look like either example (feel free to add/modify any parameters as necessary).  
+(Press 'ggdG' to clear the file in vim)  
 Most important part is to use the same name of the upstream in the server proxy_pass.  
 Add servers as needed.  
 ## Start nginx
