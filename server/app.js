@@ -9,10 +9,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, '..')));
-// app.use((req, res, next) => {
-//   console.log(req.method, req.url);
-//   next();
-// });
+app.use((req, res, next) => {
+  console.log(req.method, req.url);
+  next();
+});
 
 app.get('/', (req, res) => {
   res.status(200).send(`
@@ -38,6 +38,7 @@ app.get('/qa/questions', (req, res) => {
   } else {
     db.getQAbyProductIdJoin(product_id, page, count)
       .then((results) => {
+        console.log(results);
         res.status(200).send({
           product_id,
           results,
