@@ -1,5 +1,5 @@
 # How to configure nginx for load balancing
-## Install nginx on EC2 instance
+## Install nginx on EC2 instance (Amazon Linux)
 ```
 sudo yum update
 sudo amazon-linux-extras install epel
